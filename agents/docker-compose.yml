@@ -8,7 +8,7 @@ services:
     ports:
       - "8000:8000"  # Mapeia a porta 8000 do container para a porta 8000 do host
     depends_on:
-      - db
+      - db1
       - redis
     environment:
       OPENAI_API_KEY: ${OPENAI_API_KEY}
@@ -19,17 +19,19 @@ services:
       REDIS_HOST: cache
       REDIS_PORT: 6379
       REDIS_PASSWORD: eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+      DATABASE_URL: 'postgresql+psycopg2://postgres:postgres@db1/postgres'
 
-  db:
+  db1:
     image: "ankane/pgvector"
     restart: unless-stopped
     volumes:
       - postgres-data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     environment:
       POSTGRES_USER: postgres
       POSTGRES_DB: postgres
       POSTGRES_PASSWORD: postgres
-      
+
   redis:
     image: redis:6.2-alpine
     restart: always

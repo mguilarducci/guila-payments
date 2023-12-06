@@ -6,4 +6,5 @@ langchain
 openai
 redis
 langfuse
-chromadb
+tiktoken
+pgvector

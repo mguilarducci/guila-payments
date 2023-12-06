@@ -1,4 +1,5 @@
 import uuid
+import os
 
 from fastapi import FastAPI
 from pydantic import BaseModel
@@ -7,9 +8,11 @@ from src.db import init, db_get_key, db_create_key
 from src.key_management_agent import run as key_agent_run
 from src.pix_agent import run as pix_agent_run
 from src.health import check
+from src.payment_agent import load, run_query
+
 
 init()
-
+base_path = os.getcwd()
 
 class Key(BaseModel):
     name: str
@@ -19,6 +22,9 @@ class KeyAgentRequest(BaseModel):
     session_id: str
     input: str
 
+
+class QueryRequest(BaseModel):
+    query: str
 
 
 app = FastAPI()
@@ -51,3 +57,13 @@ def execute_key_agent(input: KeyAgentRequest):
 @app.get("/health")
 def health():
     return check()
+
+@app.post("/api/load")
+def execute_load():
+    load(base_path)
+
+@app.post("/api/query")
+def execute_query(query: QueryRequest):
+    run_query(query.query)
+
+    
